@@ -22,7 +22,6 @@ $last->lastEvent = $max;
 $last->lastRun = time();
 foreach($branches as $branch => $data){
 	$last->versions->{$branch} = $data;
-["sha" => $sha,"time" => time(),"trigger" => $event->actor->login];
 }
 file_put_contents("last.json", json_encode($last, JSON_PRETTY_PRINT));
 foreach($branches as $branch => $data){
