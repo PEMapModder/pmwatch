@@ -5,6 +5,7 @@ printDate(){
 }
 
 while true; do
+	mkdir artifacts 2>/dev/null
 	rm -rf clone
 	printDate; echo Checking for updates...
 	COMMITS=$(wget -O - --header="Authorization: bearer $(cat /GITHUB_TOKEN)" --header="User-Agent: PocketMine-MP-Compiler pmt.mcpe.me" https://api.github.com/repos/PocketMine/PocketMine-MP/events 2>/dev/null | php scanBranches.php)
