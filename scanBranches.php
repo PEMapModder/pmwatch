@@ -1,18 +1,30 @@
 <?php
 
+define("isDebug", isset(getopt("", ["debug"])["debug"]));
+
+if(!is_file("last.json")){
+	file_put_contents("last.json", json_encode([
+		"lastEvent" => 0,
+		"versions" => new stdClass
+	]));
+}
+
 $last = json_decode(file_get_contents("last.json"));
 $data = array_filter(json_decode(file_get_contents("php://stdin")), function($ev) use($last){
 	if(intval($ev->id) <= $last->lastEvent) return false;
+	if(isDebug) echo $ev->type, PHP_EOL;
 	if($ev->type === "PushEvent"){
 		return true;
 	}
 	if($ev->type === "PullRequestEvent"){
-		if($ev->payload->action === "opened"){
+		if($ev->payload->action === "opened" or $ev->payload->action === "synchronize"){
 			return true;
 		}
 	}
 	return false;
 });
+
+if(isDebug) var_dump($data);
 
 $branches = [];
 $max = $last->lastEvent;

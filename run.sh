@@ -9,7 +9,6 @@ while true; do
 	rm -rf clone
 	printDate; echo Checking for updates...
 	COMMITS=$(wget -O - --header="Authorization: bearer $(cat /GITHUB_TOKEN)" --header="User-Agent: PocketMine-MP-Compiler pmt.mcpe.me" https://api.github.com/repos/PocketMine/PocketMine-MP/events 2>/dev/null | php scanBranches.php)
-	echo "$COMMITS"
 	while IFS= read -r line; do
 		if [ -z "$line" ]; then
 			break
@@ -29,8 +28,10 @@ while true; do
 			printDate; echo Cloning...
 			(git clone "$REMOTE" . && git submodule update --init --recursive) 2>/dev/null >/dev/null
 			printDate; echo Checking out this version...
-			echo "git checkout $SHA"
 			((git checkout "$SHA" && git submodule update) 3>&1 1>&2- 2>&3-) | tail -n 1
+			printDate; echo Optimizing...
+			php /PreProcessor/PreProcessor.php --path . --multisize | tr "\n" "\r"
+			php /PreProcessor/CodeOptimizer.php --path . | tr "\n" "\r"
 			printDate; echo Compiling...
 			PHAR_OUT=$(php ../compile.php --out "../artifacts/pr/$PR_ID".phar --from "./")
 			printDate; echo $PHAR_OUT
@@ -48,7 +49,7 @@ while true; do
 		printDate; echo Cloning...
 		(git clone https://github.com/PocketMine/PocketMine-MP.git . && git submodule update --init --recursive) 2>/dev/null >/dev/null
 		printDate; echo Checking out this version...
-		((git checkout "$SHA" && git submodule update )3>&1 1>&2- 2>&3-) | tail -n 1
+		((git checkout "$SHA" && git submodule update) >/dev/null 2>&1) | tail -n 1
 		printDate; echo Compiling...
 		PHAR_OUT=$(php ../compile.php --out "../artifacts/$BRANCH".phar --from "./")
 		printDate; echo $PHAR_OUT
