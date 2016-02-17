@@ -12,6 +12,7 @@ Backend source code for http://pmt.mcpe.me/pmb
 
 ### Create a phar from source
 If you just want to create a phar from source:
+
 1. Before everything, the very first thing is to run `./start.sh` in your server directory to make sure that it works!
 1. Run `php compile.php --out $OUT`, where `$OUT` is the exact filename to create the phar at. File will be overwritten if exists.
 
